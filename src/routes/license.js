@@ -2,24 +2,16 @@ import express from "express";
 import { randomId } from "../id-utils.js";
 import { getContract } from "../fabric.js";
 import { signVC } from "../vc-sign.js";
-import {
-  getIssuerInfo,
-  getUserInfo,
-  saveUserVC,
-} from "../utils/key-io.js";
+import { getIssuerInfo } from "../utils/key-io.js";
 
 const r = express.Router();
 
 r.post("/", async (req, res) => {
   try {
-    const { licenseNumber = "A-123-456-7890", userDid: providedUserDid } =
-      req.body;
+    const { licenseNumber = "A-123-456-7890", userDid } = req.body;
 
-    // userDid가 제공되지 않으면 키스토어에서 가져오기
-    let userDid = providedUserDid;
     if (!userDid) {
-      const { userDid: storedUserDid } = getUserInfo();
-      userDid = storedUserDid;
+      return res.status(400).json({ error: "userDid is required" });
     }
 
     const licenseId = randomId();
@@ -36,28 +28,13 @@ r.post("/", async (req, res) => {
       '{"licenseType":"일반"}'
     );
 
-    // 즉시 VC 발급
-    const unsigned = {
-      "@context": ["https://www.w3.org/ns/credentials/v2"],
-      type: ["VerifiableCredential", "DriverLicenseVC"],
-      issuer: { id: issuerDid, name: "정부24 Driver-License" },
-      issuanceDate: new Date().toISOString(),
-      credentialSubject: { licenseId: licenseDid },
-    };
-    const signed = signVC(unsigned);
-    
-    // VC 체인코드 저장
-    await contract.submitTransaction("putVC", JSON.stringify(signed));
-    
-    // 로컬 저장
-    const filePath = saveUserVC(signed);
-
     res.json({
+      licenseId,
       licenseDid,
-      vc: signed,
-      storedAt: filePath,
       userDid,
       licenseNumber,
+      issuerDid,
+      message: "License DID created. Request VC issuance separately."
     });
   } catch (e) {
     console.error(e);

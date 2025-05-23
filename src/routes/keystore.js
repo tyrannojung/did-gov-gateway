@@ -27,18 +27,6 @@ r.post("/issuer", (req, res) => {
   });
 });
 
-/* ─ User wallet (서버에도 저장) ────────────────────────────────── */
-r.post("/user", (req, res) => {
-  const userId = randomId();
-  const { publicKey, privateKey } = newKeyPair();
-  saveWallet("user", userId, publicKey, privateKey);
-
-  res.json({
-    userId,
-    did: `did:anam145:user:${userId}`,
-    publicKeyB64: publicKey.replace(/-----[^-]+-----|\s+/g, ""),
-    privateKeyB64: privateKey.replace(/-----[^-]+-----|\s+/g, ""),
-  });
-});
+/* ❌ User 키 생성 제거 - 안드로이드에서 처리 */
 
 export default r;

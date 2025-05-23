@@ -12,3 +12,5 @@ yarn-error.log*
 
 # keys
 src/keys/*.pem
+
+.llm-context/

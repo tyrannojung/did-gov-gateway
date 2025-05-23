@@ -12,13 +12,17 @@ import {
 const r = express.Router();
 
 /*---------------------------------------------------------------
- ▸ POST /vcs/driver-license     —  VC 발급
-    body { licenseDid? : "did:anam145:license:…" } (선택적)
+ ▸ POST /vcs/issue               —  VC 발급 (클라이언트 요청)
+    body { licenseDid: "did:anam145:license:…" }
  ----------------------------------------------------------------*/
-r.post("/driver-license", async (req, res) => {
+r.post("/issue", async (req, res) => {
   try {
-    // licenseDid가 제공되지 않으면 최신 것 사용
-    const licenseDid = req.body.licenseDid || getLatestLicenseDid();
+    const { licenseDid } = req.body;
+    
+    if (!licenseDid) {
+      return res.status(400).json({ error: "licenseDid is required" });
+    }
+    
     const { issuerDid } = getIssuerInfo();
 
     /* 1) VC skeleton 작성 & 서명 */
@@ -35,10 +39,8 @@ r.post("/driver-license", async (req, res) => {
     const contract = await getContract();
     await contract.submitTransaction("putVC", JSON.stringify(signed));
 
-    /* 3) 사용자 VC 파일에 저장 (덮어쓰기) */
-    const filePath = saveUserVC(signed);
-
-    res.status(201).json({ ...signed, storedAt: filePath });
+    /* 3) 클라이언트에게 반환 (서버 저장 안함) */
+    res.status(201).json(signed);
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: e.message });
