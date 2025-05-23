@@ -1,0 +1,26 @@
+{
+  "name": "gov24-did-gateway",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Gov24 issuer+verifier REST API for did:anam145",
+  "author": "YOU <you@example.com>",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "init:issuer": "bash scripts/gen-issuer-wallet.sh",
+    "dev": "nodemon --watch src --ext js,json --exec node src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "bs58": "^5.0.0",
+    "dotenv": "^16.4.1",
+    "express": "^4.19.2",
+    "fabric-network": "2.2.20",
+    "json-stable-stringify": "^1.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

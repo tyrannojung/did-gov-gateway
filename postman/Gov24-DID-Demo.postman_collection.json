@@ -1,0 +1,113 @@
+{
+  "info": {
+    "name": "Gov24-DID Demo (rev-6-auto)",
+    "_postman_id": "71c2b3e6-4eb6-4af7-b582-89c8db391145",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1-A ▶︎ Generate **User** wallet",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://{{host}}/keystore/user",
+          "host": ["{{host}}"],
+          "path": ["keystore", "user"]
+        }
+      }
+    },
+    {
+      "name": "1-B ▶︎ Register **User-DID**",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://{{host}}/dids/user",
+          "host": ["{{host}}"],
+          "path": ["dids", "user"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"meta\": { \"name\": \"홍길동\" }\n}"
+        }
+      }
+    },
+    {
+      "name": "2 ▶︎ Issue **Complete Driver License** (DID + VC)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://{{host}}/licenses",
+          "host": ["{{host}}"],
+          "path": ["licenses"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "3 ▶︎ Verify VC on-chain",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://{{host}}/vcs/latest/verify",
+          "host": ["{{host}}"],
+          "path": ["vcs", "latest", "verify"]
+        }
+      }
+    },
+    {
+      "name": "4-A ▶︎ Build **VP** (client)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://{{host}}/vps/present",
+          "host": ["{{host}}"],
+          "path": ["vps", "present"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "4-B ▶︎ Verify **VP** (server)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://{{host}}/vps/verify",
+          "host": ["{{host}}"],
+          "path": ["vps", "verify"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"vp\": {\n    \"@context\": [\"https://www.w3.org/ns/credentials/v2\"],\n    \"type\": [\"VerifiablePresentation\"],\n    \"holder\": \"REPLACE_WITH_4A_RESPONSE_HOLDER\",\n    \"verifiableCredential\": {},\n    \"proof\": {\n      \"type\": \"Secp256r1Signature2018\",\n      \"created\": \"REPLACE_WITH_4A_RESPONSE\",\n      \"proofPurpose\": \"authentication\",\n      \"verificationMethod\": \"REPLACE_WITH_4A_RESPONSE\",\n      \"challenge\": \"REPLACE_WITH_4A_RESPONSE\",\n      \"proofValue\": \"REPLACE_WITH_4A_RESPONSE\"\n    }\n  },\n  \"challenge\": \"REPLACE_WITH_4A_RESPONSE_CHALLENGE\"\n}"
+        }
+      }
+    },
+    {
+      "name": "4-C ▶︎ Verify **Latest VP** (auto)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://{{host}}/vps/verify-latest",
+          "host": ["{{host}}"],
+          "path": ["vps", "verify-latest"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    }
+  ],
+  "variable": [{ "key": "host", "value": "localhost:8080" }]
+}
