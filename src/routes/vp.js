@@ -18,6 +18,7 @@ r.post("/verify", async (req, res) => {
     
 
     /* ① VP 구조 검증 */
+    console.log("Checking VP structure...");
     if (!vp || !vp.verifiableCredential || !vp.proof || !vp.holder) {
       const structureError = {
         hasVp: !!vp,
@@ -25,34 +26,45 @@ r.post("/verify", async (req, res) => {
         hasProof: !!(vp && vp.proof),
         hasHolder: !!(vp && vp.holder)
       };
+      console.log("VP structure validation failed:", structureError);
       return res.status(400).json({ valid: false, reason: "Invalid VP structure - missing required fields" });
     }
+    console.log("VP structure OK");
     
     if (!vp.proof.proofValue || !vp.proof.challenge) {
+      console.log("VP proof structure validation failed");
       return res.status(400).json({ valid: false, reason: "Invalid VP proof structure" });
     }
+    console.log("VP proof structure OK");
 
     /* ② VC on-chain 검증 */
     const vcId = vp.verifiableCredential.id;
+    console.log("Verifying VC on chain, vcId:", vcId);
     if (!vcId) {
       return res.status(400).json({ valid: false, reason: "VC ID not found in VP" });
     }
     const contract = await getContract();
+    console.log("Got contract, verifying VC...");
     const check = JSON.parse(
       (await contract.evaluateTransaction("verifyVC", vcId)).toString()
     );
+    console.log("VC verification result:", check);
     if (!check.valid) {
       return res.status(400).json({ valid: false, reason: "VC invalid" });
     }
+    console.log("VC is valid");
 
     /* ③ holder 공개키 확보 - 체인에서 DID Document 조회 */
     const holderDid = vp.holder;
+    console.log("Getting holder DID document for:", holderDid);
     
     let pubPem;
     try {
       // 체인에서 DID Document 가져오기
       const didDocBuf = await contract.evaluateTransaction("getDID", holderDid);
+      console.log("DID document buffer received");
       const didDoc = JSON.parse(didDocBuf.toString());
+      console.log("DID document parsed:", JSON.stringify(didDoc, null, 2));
       
       // 공개키 추출
       if (!didDoc.verificationMethod || didDoc.verificationMethod.length === 0) {
