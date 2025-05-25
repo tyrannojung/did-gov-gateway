@@ -98,20 +98,24 @@ r.post("/verify", async (req, res) => {
 
     /* ② holder 공개키 확보 - 체인에서 DID Document 조회 */
     const holderDid = vp.holder;
+    console.log("Looking up holder DID:", holderDid);
     
     let pubPem;
     try {
       // 체인에서 DID Document 가져오기
       const didDocBuf = await contract.evaluateTransaction("getDID", holderDid);
       const didDoc = JSON.parse(didDocBuf.toString());
+      console.log("DID Document retrieved:", JSON.stringify(didDoc, null, 2));
       
       // 공개키 추출
       if (!didDoc.verificationMethod || didDoc.verificationMethod.length === 0) {
         throw new Error("No verification method found in DID document");
       }
       pubPem = didDoc.verificationMethod[0].publicKeyPem;
+      console.log("Public key extracted:", pubPem ? "Found" : "Not found");
     } catch (error) {
-      return res.status(400).json({ valid: false, reason: "Holder key not found" });
+      console.error("Error retrieving DID document:", error);
+      return res.status(400).json({ valid: false, reason: "Holder key not found: " + error.message });
     }
 
     /* ③ VP 서명 확인 */
