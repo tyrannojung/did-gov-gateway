@@ -12,14 +12,11 @@ const r = express.Router();
 
 r.post("/", async (req, res) => {
   try {
-    const { licenseNumber = "A-123-456-7890", userDid: providedUserDid } =
-      req.body;
+    const { licenseNumber = "A-123-456-7890", userDid } = req.body;
 
-    // userDid가 제공되지 않으면 키스토어에서 가져오기
-    let userDid = providedUserDid;
+    // userDid는 필수
     if (!userDid) {
-      const { userDid: storedUserDid } = getUserInfo();
-      userDid = storedUserDid;
+      throw new Error("userDid is required");
     }
 
     const licenseId = randomId();

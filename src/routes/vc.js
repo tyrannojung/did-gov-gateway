@@ -77,4 +77,18 @@ r.get("/:vcId/verify", async (req, res) => {
   }
 });
 
+/*---------------------------------------------------------------
+ ▸ GET /vcs/:vcId               —  특정 VC 조회
+ ----------------------------------------------------------------*/
+r.get("/:vcId", async (req, res) => {
+  try {
+    const contract = await getContract();
+    const vcBuf = await contract.evaluateTransaction("getVC", req.params.vcId);
+    const vc = JSON.parse(vcBuf.toString());
+    res.json(vc);
+  } catch (e) {
+    res.status(404).json({ error: e.message });
+  }
+});
+
 export default r;

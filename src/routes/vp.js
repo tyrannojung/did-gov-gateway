@@ -96,16 +96,20 @@ r.post("/verify", async (req, res) => {
       return res.status(400).json({ valid: false, reason: "VC invalid" });
     }
 
-    /* ② holder 공개키 확보 */
-    const holderParts = vp.holder.split(":");
-    if (holderParts.length < 3) {
-      return res.status(400).json({ valid: false, reason: "Invalid holder DID format" });
-    }
-    const holderId = holderParts.pop(); // userId
+    /* ② holder 공개키 확보 - 체인에서 DID Document 조회 */
+    const holderDid = vp.holder;
     
     let pubPem;
     try {
-      ({ pubPem } = loadWalletPem("user", holderId));
+      // 체인에서 DID Document 가져오기
+      const didDocBuf = await contract.evaluateTransaction("getDID", holderDid);
+      const didDoc = JSON.parse(didDocBuf.toString());
+      
+      // 공개키 추출
+      if (!didDoc.verificationMethod || didDoc.verificationMethod.length === 0) {
+        throw new Error("No verification method found in DID document");
+      }
+      pubPem = didDoc.verificationMethod[0].publicKeyPem;
     } catch (error) {
       return res.status(400).json({ valid: false, reason: "Holder key not found" });
     }
