@@ -79,23 +79,31 @@ r.post("/verify", async (req, res) => {
     }
 
     /* ④ VP 서명 확인 */
+    console.log("Starting VP signature verification...");
     if (!pubPem) {
       return res.status(400).json({ valid: false, reason: "Public key not found in DID document" });
     }
     
     const unsigned = { ...vp };
     delete unsigned.proof;
+    console.log("Unsigned VP:", JSON.stringify(unsigned, null, 2));
+    
     const verify = createVerify("SHA256").update(stringify(unsigned)).end();
     const sigOK = verify.verify(
       pubPem,
       Buffer.from(vp.proof.proofValue, "base64")
     );
+    console.log("Signature verification result:", sigOK);
 
     /* ⑤ challenge 비교 */
     const challengeOK = vp.proof.challenge === challenge;
+    console.log("Challenge verification:", challengeOK, `(expected: ${challenge}, got: ${vp.proof.challenge})`);
+
+    const finalResult = sigOK && challengeOK;
+    console.log("Final verification result:", finalResult);
 
     res.json({
-      valid: sigOK && challengeOK,
+      valid: finalResult,
       reason: sigOK
         ? challengeOK
           ? "VP valid"
