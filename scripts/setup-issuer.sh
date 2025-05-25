@@ -5,11 +5,11 @@ echo "🚀 Setting up issuer DID..."
 
 # 1. Generate issuer wallet
 echo "1️⃣ Generating issuer wallet..."
-npm run init:issuer
+pnpm init:issuer
 
 # 2. Start server in background
 echo "2️⃣ Starting server..."
-npm start &
+pnpm start &
 SERVER_PID=$!
 
 # Wait for server to start
@@ -37,4 +37,4 @@ curl -X POST http://localhost:8081/dids/issuer/bootstrap \
 kill $SERVER_PID
 
 echo "✅ Issuer setup complete!"
-echo "You can now start the server with: npm start"
+echo "You can now start the server with: pnpm dev or pnpm start"
