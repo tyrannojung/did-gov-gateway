@@ -6,7 +6,6 @@ import { DID_CONFIG } from "../config.js";
 import {
   getIssuerInfo,
   getUserInfo,
-  saveUserVC,
 } from "../utils/key-io.js";
 
 const r = express.Router();
@@ -46,14 +45,10 @@ r.post("/", async (req, res) => {
     
     // VC 체인코드 저장
     await contract.submitTransaction("putVC", JSON.stringify(signed));
-    
-    // 로컬 저장
-    const filePath = saveUserVC(signed);
 
     res.json({
       licenseDid,
       vc: signed,
-      storedAt: filePath,
       userDid,
       licenseNumber,
     });

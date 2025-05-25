@@ -125,14 +125,6 @@ export function getUserVC() {
   }
 }
 
-export function getLatestVcId() {
-  try {
-    const vc = getUserVC();
-    return vc.id;
-  } catch (e) {
-    throw new Error("VC ID를 찾을 수 없습니다. 먼저 VC를 발급해주세요.");
-  }
-}
 
 /* 라이센스 DID 관리 - VC에서 추출 */
 export function getLatestLicenseDid() {

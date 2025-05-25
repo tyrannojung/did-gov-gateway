@@ -5,8 +5,6 @@ import { getContract } from "../fabric.js";
 import {
   getIssuerInfo,
   getLatestLicenseDid,
-  saveUserVC,
-  getLatestVcId,
 } from "../utils/key-io.js";
 import { DID_CONFIG } from "../config.js";
 
@@ -36,42 +34,7 @@ r.post("/driver-license", async (req, res) => {
     const contract = await getContract();
     await contract.submitTransaction("putVC", JSON.stringify(signed));
 
-    /* 3) 사용자 VC 파일에 저장 (덮어쓰기) */
-    const filePath = saveUserVC(signed);
-
-    res.status(201).json({ ...signed, storedAt: filePath });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message });
-  }
-});
-
-/*---------------------------------------------------------------
- ▸ GET /vcs/latest/verify       —  최신 VC on-chain 검증
- ----------------------------------------------------------------*/
-r.get("/latest/verify", async (req, res) => {
-  try {
-    const vcId = getLatestVcId();
-    const contract = await getContract();
-    const result = await contract.evaluateTransaction("verifyVC", vcId);
-    res.json(JSON.parse(result.toString()));
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message });
-  }
-});
-
-/*---------------------------------------------------------------
- ▸ GET /vcs/:vcId/verify        —  특정 VC on-chain 검증
- ----------------------------------------------------------------*/
-r.get("/:vcId/verify", async (req, res) => {
-  try {
-    const contract = await getContract();
-    const result = await contract.evaluateTransaction(
-      "verifyVC",
-      req.params.vcId
-    );
-    res.json(JSON.parse(result.toString()));
+    res.status(201).json(signed);
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: e.message });
