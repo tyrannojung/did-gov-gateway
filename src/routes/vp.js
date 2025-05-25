@@ -84,11 +84,19 @@ r.post("/verify", async (req, res) => {
       return res.status(400).json({ valid: false, reason: "Public key not found in DID document" });
     }
     
-    const unsigned = { ...vp };
-    delete unsigned.proof;
-    console.log("Unsigned VP:", JSON.stringify(unsigned, null, 2));
+    // Android와 동일한 방식으로 VP 재구성
+    const unsigned = {
+      "@context": vp["@context"],
+      "type": vp.type,
+      "holder": vp.holder,
+      "verifiableCredential": vp.verifiableCredential
+    };
     
-    const verify = createVerify("SHA256").update(stringify(unsigned)).end();
+    // Android의 JSONObject.toString()과 유사하게 처리
+    const canonicalJson = JSON.stringify(unsigned);
+    console.log("Canonical JSON for verification:", canonicalJson);
+    
+    const verify = createVerify("SHA256").update(canonicalJson).end();
     const sigOK = verify.verify(
       pubPem,
       Buffer.from(vp.proof.proofValue, "base64")
