@@ -92,8 +92,8 @@ r.post("/verify", async (req, res) => {
       "verifiableCredential": vp.verifiableCredential
     };
     
-    // Android의 JSONObject.toString()과 유사하게 처리
-    const canonicalJson = JSON.stringify(unsigned);
+    // Android의 JSONObject.toString()과 동일하게 슬래시를 이스케이프 처리
+    const canonicalJson = JSON.stringify(unsigned).replace(/\//g, '\\/');
     console.log("Canonical JSON for verification:", canonicalJson);
     
     const verify = createVerify("SHA256").update(canonicalJson).end();
