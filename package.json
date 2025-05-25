@@ -10,6 +10,7 @@
   },
   "scripts": {
     "init:issuer": "bash scripts/gen-issuer-wallet.sh",
+    "setup": "bash scripts/setup-issuer.sh",
     "dev": "nodemon --watch src --ext js,json --exec node src/index.js",
     "start": "node src/index.js"
   },

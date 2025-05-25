@@ -2,6 +2,7 @@ import express from "express";
 import { randomId } from "../id-utils.js";
 import { getContract } from "../fabric.js";
 import { signVC } from "../vc-sign.js";
+import { DID_CONFIG } from "../config.js";
 import {
   getIssuerInfo,
   getUserInfo,
@@ -12,7 +13,7 @@ const r = express.Router();
 
 r.post("/", async (req, res) => {
   try {
-    const { licenseNumber = "A-123-456-7890", userDid } = req.body;
+    const { licenseNumber = DID_CONFIG.defaults.licenseNumber, userDid } = req.body;
 
     // userDid는 필수
     if (!userDid) {

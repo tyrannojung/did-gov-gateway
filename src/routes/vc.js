@@ -8,6 +8,7 @@ import {
   saveUserVC,
   getLatestVcId,
 } from "../utils/key-io.js";
+import { DID_CONFIG } from "../config.js";
 
 const r = express.Router();
 
@@ -25,7 +26,7 @@ r.post("/driver-license", async (req, res) => {
     const unsigned = {
       "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiableCredential", "DriverLicenseVC"],
-      issuer: { id: issuerDid, name: "정부24 Driver-License" },
+      issuer: { id: issuerDid, name: DID_CONFIG.issuerName },
       issuanceDate: new Date().toISOString(),
       credentialSubject: { licenseId: licenseDid },
     };
