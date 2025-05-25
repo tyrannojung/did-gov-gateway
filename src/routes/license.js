@@ -2,24 +2,21 @@ import express from "express";
 import { randomId } from "../id-utils.js";
 import { getContract } from "../fabric.js";
 import { signVC } from "../vc-sign.js";
+import { DID_CONFIG } from "../config.js";
 import {
   getIssuerInfo,
   getUserInfo,
-  saveUserVC,
 } from "../utils/key-io.js";
 
 const r = express.Router();
 
 r.post("/", async (req, res) => {
   try {
-    const { licenseNumber = "A-123-456-7890", userDid: providedUserDid } =
-      req.body;
+    const { licenseNumber = DID_CONFIG.defaults.licenseNumber, userDid } = req.body;
 
-    // userDid가 제공되지 않으면 키스토어에서 가져오기
-    let userDid = providedUserDid;
+    // userDid는 필수
     if (!userDid) {
-      const { userDid: storedUserDid } = getUserInfo();
-      userDid = storedUserDid;
+      throw new Error("userDid is required");
     }
 
     const licenseId = randomId();
@@ -48,14 +45,10 @@ r.post("/", async (req, res) => {
     
     // VC 체인코드 저장
     await contract.submitTransaction("putVC", JSON.stringify(signed));
-    
-    // 로컬 저장
-    const filePath = saveUserVC(signed);
 
     res.json({
       licenseDid,
       vc: signed,
-      storedAt: filePath,
       userDid,
       licenseNumber,
     });

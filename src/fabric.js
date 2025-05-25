@@ -2,6 +2,7 @@ import { Gateway, Wallets } from "fabric-network";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
+import { DID_CONFIG } from "./config.js";
 dotenv.config();
 
 const ccpPath = process.env.FABRIC_CCP_JSON; // connection.json
@@ -26,8 +27,8 @@ export async function getContract() {
   await gw.connect(ccp, {
     wallet,
     identity: idLabel,
-    discovery: { enabled: true, asLocalhost: true },
+    discovery: { enabled: true, asLocalhost: DID_CONFIG.fabric.asLocalhost },
   });
-  const network = await gw.getNetwork("mychannel");
-  return network.getContract("opendid"); // 체인코드명
+  const network = await gw.getNetwork(DID_CONFIG.fabric.channelName);
+  return network.getContract(DID_CONFIG.fabric.chaincodeName);
 }

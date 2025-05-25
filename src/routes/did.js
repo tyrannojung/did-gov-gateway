@@ -23,20 +23,26 @@ r.get("/:did(*)", async (req, res) => {
 
 /*------------------------------------------------------------------
  ▸ POST /dids/user           : User-DID 생성
-    body { publicKeyPem: (base64), meta?: {...} }
+    body { publicKeyPem: (base64 or PEM), meta?: {...} }
  -----------------------------------------------------------------*/
 r.post("/user", async (req, res) => {
   try {
-    const { meta = {} } = req.body;
+    const { publicKeyPem, meta = {} } = req.body;
 
-    // 키스토어에서 기존 사용자 정보 가져오기
-    const { userId, userDid } = getUserInfo();
+    // publicKeyPem이 제공되지 않으면 에러
+    if (!publicKeyPem) {
+      throw new Error("publicKeyPem is required");
+    }
 
-    // 키스토어에서 공개키도 가져오기
-    const userWallet = JSON.parse(
-      fs.readFileSync(path.join("src", "storage", "user", "user.wallet"))
-    );
-    const pubPem = b642pem(userWallet.publicKey, "PUBLIC KEY");
+    // userId 생성 (20바이트 nonce + Base58)
+    const userId = randomId();
+    const userDid = `did:anam145:user:${userId}`;
+
+    // Base64로 인코딩된 경우 PEM으로 변환
+    let pubPem = publicKeyPem;
+    if (!publicKeyPem.includes("-----BEGIN")) {
+      pubPem = b642pem(publicKeyPem, "PUBLIC KEY");
+    }
 
     const contract = await getContract();
     await contract.submitTransaction(
