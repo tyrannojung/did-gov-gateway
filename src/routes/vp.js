@@ -11,8 +11,10 @@ const r = express.Router();
     body { vp : {...} , challenge }
  ----------------------------------------------------------------*/
 r.post("/verify", async (req, res) => {
+  console.log("VP verification request received");
   try {
     const { vp, challenge } = req.body;
+    console.log("Request body:", JSON.stringify(req.body, null, 2));
     
 
     /* ① VP 구조 검증 */
