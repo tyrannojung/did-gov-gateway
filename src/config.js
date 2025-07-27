@@ -6,13 +6,18 @@ export const DID_CONFIG = {
   prefixes: {
     user: "did:anam145:user:",
     issuer: "did:anam145:issuer:",
-    license: "did:anam145:license:"
+    license: "did:anam145:license:",
+    student: "did:anam145:student:"  // 학생증 DID 접두사 추가
   },
   
   // Default values
   defaults: {
     licenseNumber: "A-123-456-7890",
-    issuerName: "정부24 Driver-License"
+    issuerName: "정부24 Driver-License",
+    // 학생증 기본값 추가
+    studentNumber: "2023000000",
+    university: "고려대학교",
+    department: "정보보호대학원"
   },
   
   // Fabric configuration

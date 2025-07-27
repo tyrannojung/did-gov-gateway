@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import didRoutes from "./routes/did.js";
 import licenseRoutes from "./routes/license.js";
+import studentRoutes from "./routes/student.js";
 import vcRoutes from "./routes/vc.js";
 import vpRoutes from "./routes/vp.js";
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.use("/dids", didRoutes);
 app.use("/licenses", licenseRoutes);
+app.use("/students", studentRoutes);
 app.use("/vcs", vcRoutes);
 app.use("/vps", vpRoutes);
 

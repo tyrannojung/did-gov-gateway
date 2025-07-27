@@ -109,4 +109,61 @@ r.post("/", async (req, res) => {
   }
 });
 
+/*---------------------------------------------------------------
+ ▸ GET /licenses/:licenseId     —  운전면허증 DID Document 조회
+ 
+ Request:
+   - URL Parameter: licenseId (required)
+     예시: /licenses/45s3FPxvFRdgdbwkWNdjCwxtUg51
+     
+     주의: 전체 DID가 아닌 ID 부분만 전달
+     - 올바른 예: /licenses/45s3FPxvFRdgdbwkWNdjCwxtUg51
+     - 잘못된 예: /licenses/did:anam145:license:45s3FPxvFRdgdbwkWNdjCwxtUg51
+ 
+ Response (200 OK):
+   {
+     "@context": "https://www.w3.org/ns/did/v1",
+     "id": "did:anam145:license:45s3FPxvFRdgdbwkWNdjCwxtUg51",
+     "type": "LICENSE",
+     "created": "2024-01-15T10:30:00.000Z",
+     "updated": "2024-01-15T10:30:00.000Z",
+     "controller": "did:anam145:issuer:1234567890",
+     "holder": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw",
+     "licenseNumber": "A-123-456-7890",
+     "verificationMethod": [{
+       "id": "did:anam145:license:45s3FPxvFRdgdbwkWNdjCwxtUg51#keys-1",
+       "type": "Secp256r1VerificationKey2018",
+       "controller": "did:anam145:issuer:1234567890",
+       "publicKeyMultibase": "default-issuer-key"
+     }],
+     "authentication": ["did:anam145:license:45s3FPxvFRdgdbwkWNdjCwxtUg51#keys-1"],
+     "additionalInfo": {
+       "licenseType": "일반"
+     },
+     "status": "ACTIVE"
+   }
+ 
+ Error Response (404):
+   {
+     "error": "DID를 찾을 수 없습니다: did:anam145:license:invalid"
+   }
+ 
+ Note:
+   - licenseId는 randomId()로 생성된 Base58 인코딩 값
+   - student.js의 GET /students/:studentId와 동일한 패턴
+ ----------------------------------------------------------------*/
+r.get("/:licenseId", async (req, res) => {
+  try {
+    const contract = await getContract();
+    const licenseBuf = await contract.evaluateTransaction(
+      "getLicenseDID", 
+      req.params.licenseId
+    );
+    const licenseDoc = JSON.parse(licenseBuf.toString());
+    res.json(licenseDoc);
+  } catch (e) {
+    res.status(404).json({ error: e.message });
+  }
+});
+
 export default r;
