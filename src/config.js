@@ -17,7 +17,14 @@ export const DID_CONFIG = {
     // 학생증 기본값 추가
     studentNumber: "2023000000",
     university: "Korea University",
-    department: "Graduate School of Information Security"
+    department: "Graduate School of Information Security",
+    // 공통 기본값
+    name: "Hong Gildong",
+    birthDate: "1990-01-01",
+    // 운전면허증 추가 기본값
+    licenseIssueDate: "2020-01-01",
+    licenseExpiryDate: "2030-01-01",
+    licenseType: "Class 1"
   },
   
   // Fabric configuration

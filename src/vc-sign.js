@@ -1,4 +1,5 @@
-import stringify from "json-stable-stringify";
+import stringify from "json-stringify-deterministic";
+import sortKeysRecursive from "sort-keys-recursive";
 import { createSign } from "crypto";
 import { randomId } from "./id-utils.js";
 import { loadWalletPem, getIssuerInfo } from "./utils/key-io.js";
@@ -33,8 +34,9 @@ export function signVC(vc) {
   vc.id = randomId();
 
   // 4. VC를 결정론적 JSON으로 변환 (항상 동일한 문자열 생성)
-  // json-stable-stringify는 객체의 키를 정렬하여 일관된 문자열 생성
-  const canon = Buffer.from(stringify(vc));
+  // 체인코드와 동일한 방식으로 정규화: sortKeysRecursive 후 stringify
+  const sortedVc = sortKeysRecursive(vc);
+  const canon = Buffer.from(stringify(sortedVc));
 
   // 5. SHA256 서명 객체 생성 및 데이터 입력
   const sign = createSign("SHA256");

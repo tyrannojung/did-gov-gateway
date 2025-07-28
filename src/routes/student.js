@@ -108,6 +108,7 @@ r.post("/", async (req, res) => {
     );
 
     // 2. 즉시 학생증 VC 발급
+    const now = new Date();
     const unsigned = {
       "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiableCredential", "StudentCardVC"],
@@ -115,9 +116,12 @@ r.post("/", async (req, res) => {
         id: issuerDid, 
         name: "Government24"  // 동일한 발급기관 사용
       },
-      issuanceDate: new Date().toISOString(),
+      issuanceDate: now.toISOString(),
+      validFrom: now.toISOString(),
+      validUntil: new Date(now.getTime() + 4 * 365 * 24 * 60 * 60 * 1000).toISOString(), // 4년
       credentialSubject: { 
         studentId: studentDid,
+        name: DID_CONFIG.defaults.name,
         studentNumber: studentNumber,
         university: university,
         department: department

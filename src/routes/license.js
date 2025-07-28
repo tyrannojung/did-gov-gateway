@@ -16,7 +16,7 @@ const r = express.Router();
  Request Body:
    {
      "userDid": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw", // required
-     "licenseNumber": "서울-01-123456"  // optional, 기본값: "11-22-33-44"
+     "licenseNumber": "서울-01-123456"  // optional, 기본값: "A-123-456-7890"
    }
  
  Response (200 OK):
@@ -85,12 +85,23 @@ r.post("/", async (req, res) => {
     );
 
     // 즉시 VC 발급
+    const now = new Date();
     const unsigned = {
       "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiableCredential", "DriverLicenseVC"],
       issuer: { id: issuerDid, name: "Government24" },
-      issuanceDate: new Date().toISOString(),
-      credentialSubject: { licenseId: licenseDid },
+      issuanceDate: now.toISOString(),
+      validFrom: now.toISOString(),
+      validUntil: new Date(now.getTime() + 10 * 365 * 24 * 60 * 60 * 1000).toISOString(), // 10년
+      credentialSubject: { 
+        licenseId: licenseDid,
+        name: DID_CONFIG.defaults.name,
+        birthDate: DID_CONFIG.defaults.birthDate,
+        licenseNumber: licenseNumber,
+        licenseIssueDate: DID_CONFIG.defaults.licenseIssueDate,
+        licenseExpiryDate: DID_CONFIG.defaults.licenseExpiryDate,
+        licenseType: DID_CONFIG.defaults.licenseType
+      },
     };
     const signed = signVC(unsigned);
     

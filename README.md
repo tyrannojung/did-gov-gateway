@@ -5,11 +5,13 @@ This is the gateway service for managing DIDs, VCs, and VPs on Hyperledger Fabri
 ## Setup
 
 ### 1. Install Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 2. Deploy Chaincode
+
 ```bash
 # From test-network directory
 ./network.sh up createChannel -c mychannel -ca -s couchdb
@@ -21,6 +23,7 @@ pnpm install
 ```
 
 ### 3. Configure Environment
+
 ```bash
 # Copy .env.example to .env and update Fabric paths
 cp .env.example .env
@@ -28,12 +31,14 @@ cp .env.example .env
 ```
 
 ### 4. Setup Issuer
+
 ```bash
 # This will generate issuer keys and register issuer DID on chain
 pnpm setup:issuer
 ```
 
 ### 5. Start Server
+
 ```bash
 pnpm dev   # Development mode with auto-reload
 # or
@@ -46,16 +51,21 @@ pnpm start # Production mode
 ### DID Management
 
 #### `POST /dids/user` - Register user DID
+
 **Request Body:**
+
 ```json
 {
-  "publicKey": "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----",  // required - PEM format
-  "additionalInfo": {  // optional
+  "publicKey": "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----", // required - PEM format
+  "additionalInfo": {
+    // optional
     "name": "Hong Gildong"
   }
 }
 ```
-**Response (201):** 
+
+**Response (201):**
+
 ```json
 {
   "userId": "2mFqX7Z5whEMAKjc9SwF3BRw",
@@ -64,7 +74,9 @@ pnpm start # Production mode
 ```
 
 #### `GET /dids/:did` - Get DID document
+
 **Parameters:**
+
 - `did`: Full DID string (e.g., `did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw`)
 
 **Response (200):** Returns DID Document (see DID.example.md)
@@ -72,25 +84,33 @@ pnpm start # Production mode
 ### License Management
 
 #### `POST /licenses` - Create license DID and issue VC
+
 **Request Body:**
+
 ```json
 {
-  "userDid": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw",  // required
-  "licenseNumber": "서울-01-123456"  // optional, default: "11-22-33-44"
+  "userDid": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw", // required
+  "licenseNumber": "서울-01-123456" // optional, default: "A-123-456-7890"
 }
 ```
+
 **Response (200):**
+
 ```json
 {
   "licenseDid": "did:anam145:license:3nGrY8a6xiDNBLkd0TyG4CSx",
   "userDid": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw",
   "licenseNumber": "서울-01-123456",
-  "vc": { /* DriverLicenseVC object */ }
+  "vc": {
+    /* DriverLicenseVC object */
+  }
 }
 ```
 
 #### `GET /licenses/:licenseId` - Get license DID document
+
 **Parameters:**
+
 - `licenseId`: License ID only (e.g., `45s3FPxvFRdgdbwkWNdjCwxtUg51`)
 - ⚠️ NOT the full DID
 
@@ -99,26 +119,34 @@ pnpm start # Production mode
 ### Student Card Management
 
 #### `POST /students` - Create student DID and issue VC
+
 **Request Body:**
+
 ```json
 {
-  "userDid": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw",  // required
-  "studentNumber": "2023572504",  // optional, default: "2023000000"
-  "university": "Korea University",  // optional, default: "Korea University"
-  "department": "Graduate School of Information Security"  // optional, default: "Graduate School of Information Security"
+  "userDid": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw", // required
+  "studentNumber": "2023572504", // optional, default: "2023000000"
+  "university": "Korea University", // optional, default: "Korea University"
+  "department": "Graduate School of Information Security" // optional, default: "Graduate School of Information Security"
 }
 ```
+
 **Response (200):**
+
 ```json
 {
   "studentDid": "did:anam145:student:3nGrY8a6xiDNBLkd0TyG4CSx",
   "userDid": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw",
-  "vc": { /* StudentCardVC object */ }
+  "vc": {
+    /* StudentCardVC object */
+  }
 }
 ```
 
 #### `GET /students/:studentId` - Get student DID document
+
 **Parameters:**
+
 - `studentId`: Student ID only (e.g., `3nGrY8a6xiDNBLkd0TyG4CSx`)
 - ⚠️ NOT the full DID
 
@@ -127,16 +155,21 @@ pnpm start # Production mode
 ### VC Management
 
 #### `GET /vcs/:vcId` - Get specific VC
+
 **Parameters:**
+
 - `vcId`: VC ID (e.g., `4oHsZ9b7yjEPCMle1UzH5DTy`)
 
 **Response (200):** Returns VC object (see DID.example.md)
 
 #### `GET /vcs/:vcId/verify` - Verify VC on chain
+
 **Parameters:**
+
 - `vcId`: VC ID to verify
 
 **Response (200):**
+
 ```json
 {
   "valid": true,
@@ -147,27 +180,34 @@ pnpm start # Production mode
 ### VP Management
 
 #### `POST /vps/verify` - Verify VP
+
 **Request Body:**
+
 ```json
 {
-  "challenge": "random-challenge-string-12345",  // required
-  "vp": {  // required - VP created by client
+  "challenge": "random-challenge-string-12345", // required
+  "vp": {
+    // required - VP created by client
     "@context": ["https://www.w3.org/ns/credentials/v2"],
     "type": ["VerifiablePresentation"],
     "holder": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw",
-    "verifiableCredential": { /* Single VC object */ },
+    "verifiableCredential": {
+      /* Single VC object */
+    },
     "proof": {
       "type": "Secp256r1Signature2018",
       "created": "2024-01-15T10:35:00.000Z",
       "verificationMethod": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw#keys-1",
       "proofPurpose": "authentication",
       "challenge": "random-challenge-string-12345",
-      "proofValue": "MEYCIQCx..."  // Signed by holder's private key
+      "proofValue": "MEYCIQCx..." // Signed by holder's private key
     }
   }
 }
 ```
+
 **Response (200):**
+
 ```json
 {
   "valid": true,
@@ -176,13 +216,16 @@ pnpm start # Production mode
 ```
 
 **Notes:**
+
 - Only single VC in VP is supported (not arrays)
-- Android clients must escape slashes when stringifying JSON
+- Android clients internally use `\u003d` for `=` characters when signing
 - Challenge must be unique for each verification
+- Server automatically handles the `=` to `\u003d` conversion for signature verification
 
 ## Environment Variables
 
 See `.env.example` for all required environment variables. The key variables include:
+
 - `PORT` - Server port (default: 8081)
 - `FABRIC_*` - Fabric connection credentials
 - `ISSUER_ID` and `ISSUER_DID` - Auto-generated by pnpm setup:issuer
@@ -191,6 +234,7 @@ See `.env.example` for all required environment variables. The key variables inc
 ## API Usage Examples
 
 ### 1. Register User DID
+
 ```bash
 # First, create user with public key
 curl -X POST http://localhost:8081/dids/user \
@@ -202,6 +246,7 @@ curl -X POST http://localhost:8081/dids/user \
 ```
 
 ### 2. Create Driver License
+
 ```bash
 curl -X POST http://localhost:8081/licenses \
   -H "Content-Type: application/json" \
@@ -212,6 +257,7 @@ curl -X POST http://localhost:8081/licenses \
 ```
 
 ### 3. Create Student Card
+
 ```bash
 curl -X POST http://localhost:8081/students \
   -H "Content-Type: application/json" \
@@ -224,6 +270,7 @@ curl -X POST http://localhost:8081/students \
 ```
 
 ### 4. Verify VP (Client creates VP, Server verifies)
+
 ```bash
 curl -X POST http://localhost:8081/vps/verify \
   -H "Content-Type: application/json" \
@@ -242,6 +289,7 @@ curl -X POST http://localhost:8081/vps/verify \
 ## Multiple VCs Support
 
 A single user can have multiple VCs (Verifiable Credentials):
+
 - Driver License VC (type: "DriverLicenseVC")
 - Student Card VC (type: "StudentCardVC")
 - And more can be added in the future
