@@ -19,6 +19,34 @@ app.use(cors({
 
 app.use(express.json());
 
+// Request logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  
+  // Log request body for POST/PUT
+  if ((req.method === 'POST' || req.method === 'PUT') && req.body) {
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+  }
+  
+  // Log response
+  const originalSend = res.send;
+  res.send = function(data) {
+    res.send = originalSend;
+    const duration = Date.now() - start;
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - ${res.statusCode} (${duration}ms)`);
+    
+    // Log error responses
+    if (res.statusCode >= 400) {
+      console.error('Error response:', data);
+    }
+    
+    return res.send(data);
+  };
+  
+  next();
+});
+
 app.use("/dids", didRoutes);
 app.use("/licenses", licenseRoutes);
 app.use("/students", studentRoutes);

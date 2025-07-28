@@ -83,12 +83,13 @@ r.get("/:did(*)", async (req, res) => {
    - userId는 20바이트 랜덤 값을 Base58로 인코딩하여 생성
  -----------------------------------------------------------------*/
 r.post("/user", async (req, res) => {
+  console.log(`[DID] Creating user DID...`);
   try {
-    const { publicKeyPem, meta = {} } = req.body;
+    const { publicKey, additionalInfo = {} } = req.body;
 
-    // publicKeyPem이 제공되지 않으면 에러
-    if (!publicKeyPem) {
-      throw new Error("publicKeyPem is required");
+    // publicKey가 제공되지 않으면 에러
+    if (!publicKey) {
+      throw new Error("publicKey is required");
     }
 
     // userId 생성 (20바이트 nonce + Base58)
@@ -96,9 +97,9 @@ r.post("/user", async (req, res) => {
     const userDid = `did:anam145:user:${userId}`;
 
     // Base64로 인코딩된 경우 PEM으로 변환
-    let pubPem = publicKeyPem;
-    if (!publicKeyPem.includes("-----BEGIN")) {
-      pubPem = b642pem(publicKeyPem, "PUBLIC KEY");
+    let pubPem = publicKey;
+    if (!publicKey.includes("-----BEGIN")) {
+      pubPem = b642pem(publicKey, "PUBLIC KEY");
     }
 
     const contract = await getContract();
@@ -106,7 +107,7 @@ r.post("/user", async (req, res) => {
       "createUserDID",
       userId,
       pubPem,
-      JSON.stringify(meta)
+      JSON.stringify(additionalInfo)
     );
 
     res.status(201).json({

@@ -28,7 +28,7 @@ curl -X POST http://localhost:8081/dids/issuer/bootstrap \
   -d "{
     \"publicKeyPem\": \"$PUBLIC_KEY\",
     \"meta\": {
-      \"name\": \"정부24 운전면허 발급기관\",
+      \"name\": \"POC Government Credential Issuer\",
       \"type\": \"government\"
     }
   }"
