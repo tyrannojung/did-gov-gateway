@@ -20,9 +20,9 @@ const r = express.Router();
  Request Body:
    {
      "userDid": "did:anam145:user:2mFqX7Z5whEMAKjc9SwF3BRw", // required - 학생 DID
-     "studentNumber": "2023572504",    // required - 학번
-     "university": "고려대학교",         // required - 대학교명
-     "department": "정보보호대학원"      // required - 학과명
+     "studentNumber": "2023572504",    // optional, default: "2023000000"
+     "university": "Korea University",         // optional, default: "Korea University"
+     "department": "Graduate School of Information Security"      // optional, default: "Graduate School of Information Security"
    }
  
  Response (200 OK):
@@ -38,14 +38,14 @@ const r = express.Router();
        "type": ["VerifiableCredential", "StudentCardVC"],
        "issuer": {
          "id": "did:anam145:issuer:1234567890",
-         "name": "정부24 Driver-License"  // 동일한 발급기관 사용
+         "name": "Government24"  // 동일한 발급기관 사용
        },
        "issuanceDate": "2024-01-15T10:30:00.000Z",
        "credentialSubject": {
          "studentId": "did:anam145:student:3nGrY8a6xiDNBLkd0TyG4CSx",
          "studentNumber": "2023572504",
-         "university": "고려대학교",
-         "department": "정보보호대학원"
+         "university": "Korea University",
+         "department": "Graduate School of Information Security"
        },
        "proof": {
          "type": "Secp256r1Signature2018",
@@ -63,23 +63,11 @@ const r = express.Router();
    }
    또는
    {
-     "error": "studentNumber is required"
-   }
-   또는
-   {
-     "error": "university is required"
-   }
-   또는
-   {
-     "error": "department is required"
-   }
-   또는
-   {
      "error": "홀더 DID를 찾을 수 없습니다: did:anam145:user:..."
    }
  
  Note:
-   - 모든 필드(userDid, studentNumber, university, department)가 필수입니다
+   - userDid만 필수이고 나머지는 기본값이 제공됨
    - userDid는 반드시 체인에 등록된 유효한 사용자 DID여야 함
    - Student DID와 VC가 동시에 생성되어 발급됨
    - VC는 Issuer의 개인키로 서명되어 체인에 저장됨
@@ -89,23 +77,14 @@ r.post("/", async (req, res) => {
   try {
     const { 
       userDid, 
-      studentNumber,
-      university,
-      department 
+      studentNumber = DID_CONFIG.defaults.studentNumber,
+      university = DID_CONFIG.defaults.university,
+      department = DID_CONFIG.defaults.department 
     } = req.body;
 
-    // 필수 필드 검증
+    // userDid는 필수
     if (!userDid) {
       throw new Error("userDid is required");
-    }
-    if (!studentNumber) {
-      throw new Error("studentNumber is required");
-    }
-    if (!university) {
-      throw new Error("university is required");
-    }
-    if (!department) {
-      throw new Error("department is required");
     }
 
     // 학생증 ID 생성 (20바이트 랜덤값을 Base58로 인코딩)
@@ -134,7 +113,7 @@ r.post("/", async (req, res) => {
       type: ["VerifiableCredential", "StudentCardVC"],
       issuer: { 
         id: issuerDid, 
-        name: DID_CONFIG.defaults.issuerName  // 동일한 발급기관 사용
+        name: "Government24"  // 동일한 발급기관 사용
       },
       issuanceDate: new Date().toISOString(),
       credentialSubject: { 

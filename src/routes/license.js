@@ -30,7 +30,7 @@ const r = express.Router();
        "type": ["VerifiableCredential", "DriverLicenseVC"],
        "issuer": {
          "id": "did:anam145:issuer:1234567890",
-         "name": "정부24 Driver-License"
+         "name": "Government24"
        },
        "issuanceDate": "2024-01-15T10:30:00.000Z",
        "credentialSubject": {
@@ -88,7 +88,7 @@ r.post("/", async (req, res) => {
     const unsigned = {
       "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiableCredential", "DriverLicenseVC"],
-      issuer: { id: issuerDid, name: "정부24 Driver-License" },
+      issuer: { id: issuerDid, name: "Government24" },
       issuanceDate: new Date().toISOString(),
       credentialSubject: { licenseId: licenseDid },
     };

@@ -25,7 +25,7 @@ const r = express.Router();
      "type": ["VerifiableCredential", "DriverLicenseVC"],
      "issuer": {
        "id": "did:anam145:issuer:1234567890",
-       "name": "안암145 면허증 발급처"
+       "name": "Government24"
      },
      "issuanceDate": "2024-01-15T10:30:00.000Z",
      "credentialSubject": {
@@ -60,7 +60,7 @@ r.post("/driver-license", async (req, res) => {
     const unsigned = {
       "@context": ["https://www.w3.org/ns/credentials/v2"],
       type: ["VerifiableCredential", "DriverLicenseVC"],
-      issuer: { id: issuerDid, name: DID_CONFIG.issuerName },
+      issuer: { id: issuerDid, name: DID_CONFIG.defaults.issuerName },
       issuanceDate: new Date().toISOString(),
       credentialSubject: { licenseId: licenseDid },
     };
@@ -91,7 +91,7 @@ r.post("/driver-license", async (req, res) => {
      "type": ["VerifiableCredential", "DriverLicenseVC"],
      "issuer": {
        "id": "did:anam145:issuer:1234567890",
-       "name": "안암145 면허증 발급처"
+       "name": "Government24"
      },
      "issuanceDate": "2024-01-15T10:30:00.000Z",
      "credentialSubject": {

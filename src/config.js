@@ -13,11 +13,11 @@ export const DID_CONFIG = {
   // Default values
   defaults: {
     licenseNumber: "A-123-456-7890",
-    issuerName: "정부24 Driver-License",
+    issuerName: "Government24",
     // 학생증 기본값 추가
     studentNumber: "2023000000",
-    university: "고려대학교",
-    department: "정보보호대학원"
+    university: "Korea University",
+    department: "Graduate School of Information Security"
   },
   
   // Fabric configuration
